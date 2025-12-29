@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>360 Photo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta property="og:title" content="360° Panorama View">
+		<meta property="og:description" content="Interactive 360 degree image">
+		<meta property="og:type" content="website">
+		<meta property="og:image" content="REPLACE_WITH_PREVIEW">
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script src="../pinch-wheel-zoom.js"></script>
+	</head>
+
+  <body style="margin: 0; overflow: hidden;">
+    <a-scene>
+      <a-camera
+        position="0 0 0"
+        camera="fov: 80"
+        pinch-wheel-zoom>
+      </a-camera>
+      <!-- 360 image -->
+      <a-sky src="REPLACE_WITH_PHOTO" rotation="0 -90 0"></a-sky>
+			<!-- Text -->
+			<!-- <a-text font="kelsonsans" value="Nashville, TN" width="6" position="-2.5 0.25 -1.5" rotation="0 45 0"></a-text> -->
+    </a-scene>
+  </body>
+</html>

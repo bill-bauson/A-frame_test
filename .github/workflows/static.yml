@@ -1,0 +1,88 @@
+# Simple workflow for deploying static content to GitHub Pages
+name: Deploy static content to Pages
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Single deploy job since we're just deploying
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:panoviewer
+
+      - name: Fetch photos
+        env:
+          PRIVATE_KEY: ${{ secrets.HA_PRIVATE_KEY }}
+        run: |
+          echo -n "$PRIVATE_KEY" > key.pem
+          chmod 600 key.pem
+          scp -i key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r root@homeassistant-1:share/taildrop photos
+
+      - name: Generate index
+        run: |
+          cd photos
+          for photo in *;do
+            sed -i "/CREATE_INDEX/i<li><a href=\"./viewers/$photo.html\">$photo<br><img src=\"./previews/$photo\" /></li>" ../index.html
+          done
+          sed -i "/CREATE_INDEX/d" ../index.html
+          mv ../index.html ../${{ secrets.INDEX_FILENAME }}.html
+
+      - name: Generate viewers
+        run: |
+          baseUrl=https://bill-bauson.github.io/A-frame_test/previews
+          mkdir viewers
+          cd photos
+          for photo in *;do
+            dest=../viewers/"$photo".html
+            cp ../viewer-template.html "$dest"
+            sed -i "s@REPLACE_WITH_PHOTO@../photos/$photo@" "$dest"
+            sed -i "s@REPLACE_WITH_PREVIEW@$baseUrl/$photo@" "$dest"
+          done
+
+      - name: Generate previews
+        run: |
+          sudo apt install imagemagick
+          mkdir previews
+          cd photos
+          for photo in *;do
+            convert "$photo" -resize 300x200 ../previews/"$photo"
+          done
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload entire repository
+          path: '.'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
