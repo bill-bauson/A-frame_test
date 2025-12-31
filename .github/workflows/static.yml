@@ -58,7 +58,7 @@ jobs:
           sudo apt install imagemagick
           cd photos
           for photo in *;do
-            magick "$photo" -resize 300x300 ../previews/"$photo"
+            convert "$photo" -resize 300x300 ../previews/"$photo"
           done
 
       - name: Upload artifact
