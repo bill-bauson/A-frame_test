@@ -37,14 +37,26 @@ jobs:
 
       - name: Generate index
         run: |
-          for photo in photos/*;do
-            sed -i "/CREATE_INDEX/i<li><a href=\"../viewers/$photo.html\">$photo</li>" index.html
+          cd photos
+          for photo in *;do
+            sed -i "/CREATE_INDEX/i<li><a href=\"../viewers/$photo.html\">$photo</li>" ../index.html
           done
-          sed -i "/CREATE_INDEX/d" index.html
+          sed -i "/CREATE_INDEX/d" ../index.html
 
       - name: Generate viewers
         run: |
-          for photo in photos/*;do
+          cd photos
+          for photo in *;do
+            dest=../viewers/"$photo".html
+            cp ../viewer-template.html "$dest"
+            sed -i "s/REPLACE_WITH_PHOTO/../photos/$photo" "$dest"
+            sed -i "s/REPLACE_WITH_PREVIEW/../previews/$photo" "$dest"
+          done
+
+      - name: Generate previews
+        run: |
+          cd photos
+          for photo in *;do
             :
           done
 
