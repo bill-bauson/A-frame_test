@@ -44,6 +44,7 @@ jobs:
         run: |
           rm -r photos
           echo "$TEST_PRIVATE_KEY" > key.pem
+          chmod 600 key.pem
           scp -i key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r keith@keith-xps:src/A-frame_test/photos .
 
       - name: Generate index
