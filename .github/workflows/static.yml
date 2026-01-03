@@ -62,7 +62,7 @@ jobs:
           baseUrl=https://bill-bauson.github.io/A-frame_test/previews
           mkdir viewers
           cd photos
-          IFS=$'\n' sorted_photos=($(printf '%s\n' * | sort -r))
+          mapfile -t sorted_photos < <(printf '%s\n' * | sort -r)
           for photo in "${sorted_photos[@]}";do
             dest=../viewers/"$photo".html
             cp ../viewer-template.html "$dest"
