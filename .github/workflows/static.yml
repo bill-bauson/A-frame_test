@@ -86,3 +86,16 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        
+      - name: Send email notification
+          if: always() # This ensures the step runs after the job completes
+          uses: dawidd6/action-send-mail@v6
+          with:
+            server_address: smtp.gmail.com # Replace with your SMTP server
+            server_port: 465 # Replace with your SMTP port
+            username: ${{ secrets.EMAIL_USERNAME }}
+            password: ${{ secrets.EMAIL_PWD }}
+            subject: "GitHub Actions job result for ${{ github.repository }} has ${{ job.status }}"
+            body: "The job status is ${{ job.status }}."
+            to: billbauson@gmail.com # Comma-separated recipients
+            from: GitHub Actions Notifier # Optional sender name
