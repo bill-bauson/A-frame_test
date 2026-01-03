@@ -51,7 +51,8 @@ jobs:
       - name: Generate index
         run: |
           cd photos
-          for photo in *;do
+          IFS=$'\n' sorted_photos=($(ls -1 . | sort -r))
+          for photo in "${sorted_photos[@]}";do
             sed -i "/CREATE_INDEX/i<li><a href=\"./viewers/$photo.html\">$photo<br><img src=\"./previews/$photo\" /></li>" ../index.html
           done
           sed -i "/CREATE_INDEX/d" ../index.html
