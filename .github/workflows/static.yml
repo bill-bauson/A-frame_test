@@ -88,7 +88,7 @@ jobs:
         uses: actions/deploy-pages@v4
         
       - name: Send email notification
-          if: always() # This ensures the step runs after the job completes
+          if: ${{ always() }} # This ensures the step runs after the job completes
           uses: dawidd6/action-send-mail@v6
           with:
             server_address: smtp.gmail.com # Replace with your SMTP server
